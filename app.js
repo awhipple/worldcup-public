@@ -93,6 +93,7 @@ let scores = {}; // num -> {status, score1, score2, minute}
 let mainTab = 'matches';        // 'matches' | 'players'
 let lbStat = 'goals';           // 'goals' | 'assists' | 'clean_sheets'
 let leaderboards = null;        // {goals:[…], assists:[…], clean_sheets:[…], source}
+let gamePollTimer = null;       // re-poll the open game view while a match is live
 
 function passesFilter(mt) {
   if (filter === 'all') return true;
@@ -401,28 +402,59 @@ function route() {
 }
 
 function closeGame() {
+  stopGamePoll();
   const v = document.getElementById('gameView');
   if (v) v.hidden = true;
+}
+
+function stopGamePoll() {
+  if (gamePollTimer) { clearInterval(gamePollTimer); gamePollTimer = null; }
+}
+
+// One match's event data, from the active source (static bundle or live API).
+async function fetchGameData(num) {
+  if (STATIC) return (DATA && DATA.events && DATA.events[num]) || { status: 'SCHEDULED', events: [] };
+  try {
+    return await (await fetch(`${BASE}api/events?match=${num}`, { cache: 'no-store' })).json();
+  } catch (e) { return null; }
 }
 
 async function openGame(num) {
   const mt = MATCHES.find((m) => m.num === num);
   const view = document.getElementById('gameView');
   if (!mt || !view) return;
+  stopGamePoll();
   view.hidden = false;
   view.scrollTop = 0;
   view.innerHTML =
     `<div class="g-topbar"><button class="g-back">← Back</button></div><div class="g-empty">Loading…</div>`;
   view.querySelector('.g-back').onclick = () => history.back();
-  let data = { status: 'SCHEDULED', events: [] };
-  if (STATIC) {
-    data = (DATA.events && DATA.events[num]) || { status: 'SCHEDULED', events: [] };
-  } else {
-    try {
-      data = await (await fetch(`${BASE}api/events?match=${num}`, { cache: 'no-store' })).json();
-    } catch (e) { /* render with empty */ }
+  const data = (await fetchGameData(num)) || { status: 'SCHEDULED', events: [] };
+  if (location.hash !== `#game=${num}`) return;
+  renderGame(view, mt, data);
+  // Keep the open view live: re-poll until the match is over, so new goals/cards
+  // appear without leaving the screen. (Stays on whatever cadence the rest of the
+  // app polls; static mode rides the data.json re-pull.)
+  if (data.status !== 'FINISHED') {
+    const every = STATIC ? 60000 : (DEMO ? 12000 : 30000);
+    gamePollTimer = setInterval(() => refreshGameView(num), every);
   }
-  if (location.hash === `#game=${num}`) renderGame(view, mt, data);
+}
+
+async function refreshGameView(num) {
+  if (location.hash !== `#game=${num}`) { stopGamePoll(); return; }
+  const view = document.getElementById('gameView');
+  const mt = MATCHES.find((m) => m.num === num);
+  if (!view || view.hidden || !mt) return;
+  const data = await fetchGameData(num);
+  if (!data || location.hash !== `#game=${num}`) return;
+  // Preserve reading position: stay pinned to the bottom if you're watching the
+  // live tail (new nodes slot in there); otherwise hold your scroll position.
+  const nearBottom = view.scrollHeight - view.scrollTop - view.clientHeight < 60;
+  const prev = view.scrollTop;
+  renderGame(view, mt, data);
+  view.scrollTop = nearBottom ? view.scrollHeight : prev;
+  if (data.status === 'FINISHED') stopGamePoll();  // nothing more will change
 }
 
 function renderGame(view, mt, data) {
