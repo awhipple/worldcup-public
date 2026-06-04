@@ -359,6 +359,20 @@ body.on-players .jump-now { display: none !important; }
 .g-assist { color: var(--muted); font-size: 12px; font-weight: 400; }
 .g-empty { text-align: center; color: var(--faint); padding: 40px 0; font-size: 14px; }
 
+/* trailing "still live" node at the bottom of an in-progress game's timeline:
+   a red node that pings, so the timeline reads as open-ended / awaiting events. */
+.g-tail .g-ev-min { color: var(--live); }
+.g-tail .g-ev-min::before {
+  background: var(--live);
+  width: 11px; height: 11px;
+  animation: tailping 1.4s ease-out infinite;
+}
+@keyframes tailping {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--live) 55%, transparent); }
+  70%  { box-shadow: 0 0 0 9px color-mix(in srgb, var(--live) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--live) 0%, transparent); }
+}
+
 /* ---------- responsive ---------- */
 @media (max-width: 560px) {
   :root { --topbar-h: 104px; }

@@ -447,8 +447,17 @@ function renderGame(view, mt, data) {
       `<span class="name${t.placeholder ? ' placeholder' : ''}">${esc(t.name)}</span></div>`;
 
   const evs = data.events || [];
-  const timeline = evs.length
-    ? evs.map(eventRow).join('')
+  // For a game that's underway, cap the timeline with a pulsing red node at the
+  // trailing end — it reads as "still live, more goals/cards may still come".
+  const liveTail = (live || ht)
+    ? `<div class="g-ev g-tail">` +
+        `<div class="g-ev-c left empty"></div>` +
+        `<div class="g-ev-min live">${ht ? 'HT' : (data.minute ? data.minute + "'" : '')}</div>` +
+        `<div class="g-ev-c right empty"></div>` +
+      `</div>`
+    : '';
+  const timeline = (evs.length || liveTail)
+    ? evs.map(eventRow).join('') + liveTail
     : `<div class="g-empty">${ft ? 'No goals or cards' : st === 'SCHEDULED' ? 'Not started yet' : 'No events yet'}</div>`;
 
   view.innerHTML =
