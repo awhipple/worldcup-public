@@ -302,6 +302,10 @@ function applyStaticChrome() {
     .some((k) => Array.isArray(lb[k]) && lb[k].length);
   const tabs = document.getElementById('mainTabs');
   if (tabs) tabs.hidden = !hasPlayers;   // lone "Matches" tab -> hide the whole bar
+  // The share link points AT the public site; on the public site itself it's
+  // redundant (you're already there), so hide it.
+  const share = document.getElementById('shareLink');
+  if (share) share.hidden = true;
 }
 
 function renderLeaderboard() {

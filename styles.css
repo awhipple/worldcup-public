@@ -112,6 +112,29 @@ body {
 .tab:hover { color: var(--text); }
 .tab.is-on { background: var(--accent); color: #04222a; }
 
+/* right-side cluster of row 1: the view tabs + the public-site share link */
+.topbar-actions { display: inline-flex; align-items: center; gap: 8px; }
+.share-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  font: inherit; font-size: 13px; font-weight: 700;
+  color: var(--text); text-decoration: none;
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.share-btn:hover { border-color: var(--accent); color: var(--accent); }
+.share-btn svg { width: 17px; height: 17px; flex: none; }
+.share-btn[hidden] { display: none; }  /* explicit display: above beats [hidden] UA rule */
+/* phones: drop the label to an icon-only pill so row 1 stays uncrowded */
+@media (max-width: 460px) {
+  .share-label { display: none; }
+  .share-btn { padding: 8px; }
+}
+
 .filters { display: inline-flex; gap: 4px; padding: 3px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; }
 .chip {
   appearance: none;

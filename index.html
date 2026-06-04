@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="World Cup">
   <title>World Cup 2026</title>
-  <link rel="stylesheet" href="styles.css?v=d9fe33fb">
+  <link rel="stylesheet" href="styles.css?v=1076cad3">
 </head>
 <body>
   <header class="topbar">
@@ -20,9 +20,27 @@
           <p class="sub" id="subtitle">Canada · Mexico · USA</p>
         </div>
       </div>
-      <div class="tabs" id="mainTabs" role="tablist" aria-label="View">
-        <button class="tab is-on" data-tab="matches" role="tab">Matches</button>
-        <button class="tab" data-tab="players" role="tab">Players</button>
+      <div class="topbar-actions">
+        <div class="tabs" id="mainTabs" role="tablist" aria-label="View">
+          <button class="tab is-on" data-tab="matches" role="tab">Matches</button>
+          <button class="tab" data-tab="players" role="tab">Players</button>
+        </div>
+        <!-- Opens the PUBLIC GitHub-Pages mirror in the device browser, so a
+             gated in-app user can hand the open web link to friends. Hidden on
+             the public site itself (it IS the share target — see applyStaticChrome). -->
+        <a class="share-btn" id="shareLink"
+           href="https://awhipple.github.io/worldcup-public/"
+           target="_blank" rel="noopener noreferrer"
+           title="Open the public site to share" aria-label="Open the public site to share">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+          </svg>
+          <span class="share-label">Share</span>
+        </a>
       </div>
     </div>
     <div class="subbar" id="matchControls">
@@ -56,6 +74,6 @@
 
   <div class="game-view" id="gameView" hidden></div>
 
-  <script src="app.js?v=3d9fa3d7"></script>
+  <script src="app.js?v=1d525915"></script>
 </body>
 </html>
