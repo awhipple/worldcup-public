@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="World Cup">
+  <title>World Cup 2026</title>
+  <link rel="stylesheet" href="styles.css?v=1780595611">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-main">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">★</span>
+        <div class="brand-text">
+          <h1>World Cup <span class="yr">2026</span></h1>
+          <p class="sub" id="subtitle">Canada · Mexico · USA</p>
+        </div>
+      </div>
+      <div class="tabs" id="mainTabs" role="tablist" aria-label="View">
+        <button class="tab is-on" data-tab="matches" role="tab">Matches</button>
+        <button class="tab" data-tab="players" role="tab">Players</button>
+      </div>
+    </div>
+    <div class="subbar" id="matchControls">
+      <div class="filters" id="filters" role="tablist" aria-label="Filter stage">
+        <button class="chip is-on" data-filter="all" role="tab">All</button>
+        <button class="chip" data-filter="group" role="tab">Groups</button>
+        <button class="chip" data-filter="knockout" role="tab">Knockouts</button>
+      </div>
+      <button class="today-btn" id="todayBtn" title="Jump to today">Today</button>
+    </div>
+    <div class="subbar" id="playerControls" hidden>
+      <div class="filters" id="lbStats" role="tablist" aria-label="Leaderboard stat">
+        <button class="chip is-on" data-stat="goals" role="tab">Goals</button>
+        <button class="chip" data-stat="assists" role="tab">Assists</button>
+        <button class="chip" data-stat="clean_sheets" role="tab">Clean sheets</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="agenda" class="agenda" aria-live="polite">
+    <div class="loading" id="loading">Loading the schedule…</div>
+  </main>
+
+  <main id="leaderboard" class="leaderboard" aria-live="polite" hidden>
+    <ol class="lb-list" id="lbList"><li class="loading">Loading…</li></ol>
+  </main>
+
+  <div class="jump-now" id="jumpNow">
+    <button id="jumpNowBtn">↑ Jump to today</button>
+  </div>
+
+  <div class="game-view" id="gameView" hidden></div>
+
+  <script src="app.js?v=1780595611"></script>
+</body>
+</html>

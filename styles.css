@@ -1,0 +1,374 @@
+:root {
+  --bg: #0b0f14;
+  --surface: #141b24;
+  --surface-2: #1b2530;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --text: #e8eef5;
+  --muted: #8b97a6;
+  --faint: #5b6675;
+  --accent: #22d3ee;
+  --accent-dim: #155e6b;
+  --live: #ff4d57;
+  --win: #7ee787;
+
+  /* stage accents escalate toward the final */
+  --st-group: #5b6675;
+  --st-r32: #b9824f;
+  --st-r16: #b7c0cb;
+  --st-qf: #e0b341;
+  --st-sf: #f4c430;
+  --st-third: #c9923f;
+  --st-final: #ffd84d;
+
+  --topbar-h: 116px;
+  --maxw: 760px;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; }
+button { -webkit-tap-highlight-color: transparent; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(34, 211, 238, 0.08), transparent 60%),
+    var(--bg);
+  color: var(--text);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ---------- top bar ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-top));
+  padding-top: max(12px, env(safe-area-inset-top));
+  background: rgba(11, 15, 20, 0.82);
+  backdrop-filter: saturate(140%) blur(14px);
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+/* row 1: title on the left, the Matches/Players tabs on the right — same spot
+   on both screens (the match-stage controls live on row 2, hidden on Players). */
+.topbar-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+}
+
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand-mark {
+  font-size: 26px;
+  line-height: 1;
+  color: var(--accent);
+  filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.45));
+}
+.brand-text h1 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.brand-text .yr {
+  background: linear-gradient(90deg, var(--accent), #7ef0ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.brand-text .sub {
+  margin: 1px 0 0;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Secondary selector row, shared by both tabs (stage filter on Matches, stat
+   selector on Players) — same slot, same chip styling. The topbar's bottom
+   border is the divider line right underneath it. */
+.subbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.subbar[hidden] { display: none; }  /* explicit: an explicit display: beats the [hidden] UA rule */
+
+/* primary view tabs (Matches | Players) — segmented, a touch bolder than chips */
+.tabs { display: inline-flex; gap: 4px; padding: 3px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 999px; }
+.tab {
+  appearance: none; border: 0; background: transparent; color: var(--muted);
+  font: inherit; font-size: 13px; font-weight: 700;
+  padding: 6px 15px; border-radius: 999px; cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.tab:hover { color: var(--text); }
+.tab.is-on { background: var(--accent); color: #04222a; }
+
+.filters { display: inline-flex; gap: 4px; padding: 3px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; }
+.chip {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 13px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.chip:hover { color: var(--text); }
+.chip.is-on { background: var(--accent); color: #04222a; }
+
+.today-btn {
+  appearance: none;
+  font: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 7px 15px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.today-btn:hover { border-color: var(--accent); }
+
+/* ---------- agenda ---------- */
+.agenda { max-width: var(--maxw); margin: 0 auto; padding: 8px 12px 80px; }
+.loading { text-align: center; color: var(--muted); padding: 60px 0; }
+
+.day { scroll-margin-top: calc(var(--topbar-h) + 8px); }
+
+.day-head {
+  position: sticky;
+  top: var(--topbar-h);
+  z-index: 10;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 18px 0 8px;
+  padding: 7px 4px 7px 2px;
+  background: linear-gradient(var(--bg) 65%, transparent);
+}
+.day-head .dow { font-weight: 800; font-size: 15px; letter-spacing: 0.01em; }
+.day-head .date { color: var(--muted); font-size: 13px; }
+.day-head .count { margin-left: auto; color: var(--faint); font-size: 12px; font-variant-numeric: tabular-nums; }
+.day.is-today .day-head .dow { color: var(--accent); }
+.day.is-today .day-head::after {
+  content: "TODAY";
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #04222a;
+  background: var(--accent);
+  padding: 2px 7px;
+  border-radius: 5px;
+  align-self: center;
+}
+
+/* ---------- match card ---------- */
+.match {
+  display: grid;
+  grid-template-columns: 58px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 11px 14px;
+  margin: 7px 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--stage, var(--st-group));
+  border-radius: 13px;
+  transition: border-color 0.15s, transform 0.08s, background 0.15s;
+}
+.match:hover { background: var(--surface-2); border-color: var(--line-strong); border-left-color: var(--stage, var(--st-group)); }
+
+/* a match that's underway (live or at half-time) reads clearly as in-progress:
+   red-tinted border + soft glow + faint tint; the stage accent stays on the left.
+   The pulsing LIVE/HT label in the time column supplies the motion. */
+.match.live {
+  border-color: color-mix(in srgb, var(--live) 45%, var(--line-strong));
+  border-left-color: var(--stage, var(--st-group));
+  background: color-mix(in srgb, var(--live) 8%, var(--surface));
+  box-shadow: 0 0 16px -3px color-mix(in srgb, var(--live) 55%, transparent);
+}
+.match.live:hover { background: color-mix(in srgb, var(--live) 12%, var(--surface-2)); }
+
+.m-time { text-align: center; }
+.m-time .clock { font-weight: 800; font-size: 15px; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+.m-time .status { font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; color: var(--faint); margin-top: 2px; }
+.m-time .status.ft { color: var(--muted); }
+.m-time .status.live { color: var(--live); }
+.m-time .status.live::before {
+  content: "";
+  display: inline-block;
+  width: 6px; height: 6px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: var(--live);
+  animation: pulse 1.3s ease-in-out infinite;
+  vertical-align: middle;
+}
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+
+.m-teams { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.team { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.team .flag { font-size: 18px; width: 22px; text-align: center; flex: none; line-height: 1; }
+.team .name { font-weight: 600; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.team .name.placeholder { color: var(--muted); font-weight: 500; font-style: italic; }
+.team .score {
+  margin-left: auto;
+  font-weight: 800;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  padding-left: 10px;
+}
+.team.win .name { color: #fff; }
+.team.win .score { color: var(--win); }
+.team.lose .name, .team.lose .score { color: var(--muted); }
+
+.m-meta { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 3px 9px;
+  border-radius: 6px;
+  white-space: nowrap;
+  color: var(--stage, var(--st-group));
+  background: color-mix(in srgb, var(--stage, var(--st-group)) 16%, transparent);
+}
+.m-meta .venue { font-size: 11.5px; color: var(--faint); max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---------- jump-to-now pill ---------- */
+.jump-now { position: fixed; left: 0; right: 0; bottom: calc(16px + env(safe-area-inset-bottom)); display: none; justify-content: center; z-index: 25; pointer-events: none; }
+.jump-now.show { display: flex; }
+/* The pill is a Matches-only affordance — never show it on the Players tab
+   (the agenda is display:none there, so the today-observer would otherwise
+   report "off-screen" and pop the pill up). */
+body.on-players .jump-now { display: none !important; }
+.jump-now button {
+  pointer-events: auto;
+  font: inherit; font-weight: 700; font-size: 13px;
+  color: #04222a; background: var(--accent);
+  border: 0; border-radius: 999px;
+  padding: 9px 18px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+/* ---------- leaderboard ---------- */
+.leaderboard { max-width: var(--maxw); margin: 0 auto; padding: 8px 12px 80px; }
+.leaderboard[hidden] { display: none; }
+.lb-list { list-style: none; margin: 14px 0 0; padding: 0; }
+.lb-row {
+  display: grid;
+  grid-template-columns: 30px 26px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  margin: 7px 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+}
+.lb-rank { text-align: center; font-weight: 800; font-size: 15px; font-variant-numeric: tabular-nums; color: var(--faint); }
+.lb-row:nth-child(1) .lb-rank { color: var(--st-final); }
+.lb-row:nth-child(2) .lb-rank { color: var(--st-r16); }
+.lb-row:nth-child(3) .lb-rank { color: var(--st-r32); }
+.lb-flag { font-size: 20px; text-align: center; line-height: 1; }
+.lb-who { min-width: 0; }
+.lb-name { font-weight: 700; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lb-team { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lb-count { font-weight: 800; font-size: 20px; font-variant-numeric: tabular-nums; color: var(--accent); padding-left: 6px; }
+.lb-empty { text-align: center; color: var(--faint); padding: 50px 16px; font-size: 14px; line-height: 1.6; }
+
+.section-label {
+  text-align: center;
+  margin: 30px 0 6px;
+  color: var(--faint);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.match { cursor: pointer; }
+
+/* ---------- individual game view ---------- */
+.game-view { position: fixed; inset: 0; z-index: 50; background: var(--bg); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.game-view[hidden] { display: none; }
+.g-topbar {
+  position: sticky; top: 0; z-index: 2;
+  display: flex; align-items: center; gap: 12px;
+  padding: max(12px, env(safe-area-inset-top)) 14px 12px;
+  background: rgba(11, 15, 20, 0.85);
+  backdrop-filter: saturate(140%) blur(14px); -webkit-backdrop-filter: saturate(140%) blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+.g-back {
+  appearance: none; border: 1px solid var(--line-strong); background: var(--surface-2);
+  color: var(--text); font: inherit; font-weight: 700; font-size: 14px;
+  padding: 7px 14px; border-radius: 999px; cursor: pointer;
+}
+.g-back:hover { border-color: var(--accent); }
+.g-topbar .g-stage { color: var(--muted); font-size: 13px; font-weight: 700; }
+
+.g-head { max-width: var(--maxw); margin: 0 auto; padding: 20px 16px 6px; }
+.g-date { text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+.g-score { display: grid; grid-template-columns: 1fr auto 1fr; align-items: start; gap: 8px; }
+.g-team { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; min-width: 0; }
+.g-team .flag { font-size: 44px; line-height: 1; }
+.g-team .name { font-weight: 700; font-size: 15px; }
+.g-team .name.placeholder { color: var(--muted); font-style: italic; font-weight: 500; }
+.g-team.win .name { color: #fff; }
+.g-team.lose { opacity: 0.6; }
+.g-mid { text-align: center; min-width: 96px; padding-top: 8px; }
+.g-mid .nums { font-size: 36px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
+.g-mid .nums .dash { color: var(--faint); margin: 0 2px; }
+.g-mid .ko { font-size: 24px; font-weight: 800; color: var(--text); }
+.g-status { margin-top: 8px; font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+.g-status.live { color: var(--live); }
+.g-venue { text-align: center; color: var(--faint); font-size: 12.5px; margin-top: 14px; }
+
+.g-timeline { max-width: 520px; margin: 22px auto 60px; padding: 0 14px; position: relative; }
+.g-timeline::before { content: ""; position: absolute; left: 50%; top: 4px; bottom: 4px; width: 2px; background: var(--line); transform: translateX(-1px); }
+.g-ev { display: grid; grid-template-columns: 1fr 48px 1fr; align-items: center; margin: 6px 0; }
+.g-ev-min { text-align: center; font-size: 12px; font-weight: 700; color: var(--faint); font-variant-numeric: tabular-nums; z-index: 1; }
+.g-ev-min::before { content: ""; display: block; width: 7px; height: 7px; border-radius: 50%; background: var(--line-strong); margin: 0 auto 3px; }
+.g-ev.goal .g-ev-min::before { background: var(--accent); }
+.g-ev.card .g-ev-min::before { background: var(--st-qf); }
+.g-ev-c { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.g-ev-c.left { justify-content: flex-end; text-align: right; }
+.g-ev-c.right { justify-content: flex-start; text-align: left; }
+.g-ev-c.right.empty, .g-ev-c.left.empty { visibility: hidden; }
+.g-ev-icon { font-size: 15px; flex: none; }
+.g-ev-txt { font-size: 14px; min-width: 0; }
+.g-ev.goal .g-ev-txt { font-weight: 700; }
+.g-assist { color: var(--muted); font-size: 12px; font-weight: 400; }
+.g-empty { text-align: center; color: var(--faint); padding: 40px 0; font-size: 14px; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 560px) {
+  :root { --topbar-h: 104px; }
+  .agenda { padding: 4px 8px 80px; }
+  .match { grid-template-columns: 50px 1fr; gap: 10px; padding: 10px 12px; }
+  .m-meta { grid-column: 2; flex-direction: row; align-items: center; gap: 8px; margin-top: 1px; }
+  .m-meta .venue { max-width: 40vw; }
+  .brand-text .sub { display: none; }
+}
+
+@media (min-width: 561px) {
+  .m-meta { min-width: 96px; }
+}
